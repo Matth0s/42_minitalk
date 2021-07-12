@@ -6,15 +6,28 @@
 /*   By: mmoreira <mmoreira@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 16:39:03 by mmoreira          #+#    #+#             */
-/*   Updated: 2021/07/12 03:16:57 by mmoreira         ###   ########.fr       */
+/*   Updated: 2021/07/12 16:00:22 by mmoreira         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <sys/types.h>
-#include <unistd.h>
-#include <signal.h>
+#include "minitalk.h"
 
-int	get_pid(char *str, int *pid)
+static void	provider(int c, int pid)
+{
+	int	p;
+
+	p = 8;
+	while (p--)
+	{
+		if (!(c & 1 << p))
+			kill(pid, SIGUSR1);
+		else
+			kill(pid, SIGUSR2);
+		usleep(100);
+	}
+}
+
+static int	get_pid(char *str, int *pid)
 {
 	int	i;
 
@@ -28,21 +41,6 @@ int	get_pid(char *str, int *pid)
 		i++;
 	}
 	return (0);
-}
-
-void	provider(int c, int pid)
-{
-	int	p;
-
-	p = 8;
-	while (p--)
-	{
-		if (!(c & 1 << p))
-			kill(pid, SIGUSR1);
-		else
-			kill(pid, SIGUSR2);
-		usleep(100);
-	}
 }
 
 int	main(int argc, char **argv)

@@ -8,7 +8,8 @@ NAME	=	client
 NAME2	=	server
 
 FLAGS	=	-Wall -Wextra -Werror
-#FLAGS	=	-g3 -fsanitize=address -Wall -Wextra -Werror
+
+INCLUDE	=	minitalk.h
 
 CC		=	clang
 #--------------------------------------//---------------------------------------
@@ -16,7 +17,7 @@ CC		=	clang
 	@${CC} ${FLAGS} -c $< -o ${<:.c=.o}
 	@echo "  Criando .o de "$<
 #--------------------------------------//---------------------------------------
-all:		$(NAME) $(NAME2)
+all:		$(NAME) $(NAME2) $(INCLUDE)
 
 $(NAME):	$(OBJ_C)
 	@$(CC) $(FLAGS) $(OBJ_C) -o $(NAME)

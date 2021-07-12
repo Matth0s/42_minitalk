@@ -6,40 +6,13 @@
 /*   By: mmoreira <mmoreira@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/08 16:26:49 by mmoreira          #+#    #+#             */
-/*   Updated: 2021/07/12 14:18:43 by mmoreira         ###   ########.fr       */
+/*   Updated: 2021/07/12 16:00:54 by mmoreira         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-//#include <sys/siginfo.h>
-#include <sys/types.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <signal.h>
+#include "minitalk.h"
 
-void	print_pid(int n)
-{
-	int	num;
-	int	pot;
-
-	num = n;
-	pot = 1;
-	while (num >= 10)
-	{
-		num /= 10;
-		pot *= 10;
-	}
-	write(1,"PID do server: ",15);
-	while (pot > 0)
-	{
-		num = (n / pot) + '0';
-		write(1, &num, 1);
-		n = n % pot;
-		pot /= 10;
-	}
-	write(1, "\n\n", 2);
-}
-
-size_t	str_len(char *s)
+static size_t	str_len(char *s)
 {
 	size_t	i;
 
@@ -51,7 +24,7 @@ size_t	str_len(char *s)
 	return (i);
 }
 
-char	*addchar(char *str, char c)
+static char	*addchar(char *str, char c)
 {
 	char	*temp;
 	int		i;
@@ -78,7 +51,7 @@ char	*addchar(char *str, char c)
 	return (temp);
 }
 
-void	receiver(int sig)
+static void	receiver(int sig)
 {
 	static int	c;
 	static int	p;
@@ -102,34 +75,28 @@ void	receiver(int sig)
 	}
 }
 
-/*
-void	receiver_I(int sig, siginfo_t *info, void *ucontext)
+static void	print_pid(int n)
 {
-	static int	c;
-	static int	p;
-	static char	*str;
+	int	num;
+	int	pot;
 
-	(void)info;
-	(void)ucontext;
-
-	if (sig == SIGUSR2)
-		c += 1 << (7 - p);
-	if (++p == 8)
+	num = n;
+	pot = 1;
+	while (num >= 10)
 	{
-		if (c)
-			str = addchar(str, c);
-		else
-		{
-			write(1, str, str_len(str));
-			write(1, "\n", 1);
-			free(str);
-			str = NULL;
-		}
-		c = 0;
-		p = 0;
+		num /= 10;
+		pot *= 10;
 	}
+	write(1, "PID do server: ", 15);
+	while (pot > 0)
+	{
+		num = (n / pot) + '0';
+		write(1, &num, 1);
+		n = n % pot;
+		pot /= 10;
+	}
+	write(1, "\n\n", 2);
 }
- */
 
 int	main(void)
 {
@@ -141,16 +108,6 @@ int	main(void)
 		|| sigaction(SIGUSR1, &newact, NULL) == -1
 		|| sigaction(SIGUSR2, &newact, NULL) == -1)
 		return (1);
-
-/* 	newact.sa_flags = SA_SIGINFO;
-	newact.sa_sigaction = receiver_I;
-	if (sigemptyset(&newact.sa_mask) == -1
-		|| sigaction(SIGUSR1, &newact, NULL) == -1
-		|| sigaction(SIGUSR2, &newact, NULL) == -1)
-		return (1); */
-
-/* 	signal(SIGUSR1, receiver);
-	signal(SIGUSR2, receiver); */
 	print_pid(getpid());
 	while (1)
 		pause();
