@@ -6,7 +6,7 @@
 /*   By: mmoreira <mmoreira@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/12 16:57:41 by mmoreira          #+#    #+#             */
-/*   Updated: 2021/07/12 17:15:02 by mmoreira         ###   ########.fr       */
+/*   Updated: 2021/07/12 19:56:33 by mmoreira         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,9 +66,9 @@ static void	receiver(int sig, siginfo_t *info, void *ucontext)
 			str = addchar(str, c);
 		else
 		{
-			write(1, "/----------------------------------------\n| ", 4 + 40);
+			write(1, "/----------------------------------------\n| ", 44);
 			write(1, str, str_len(str));
-			write(1, "\n\\----------------------------------------\n", 3 + 40);
+			write(1, "\n\\----------------------------------------\n\n", 44);
 			free(str);
 			str = NULL;
 			kill(info->si_pid, SIGUSR1);
