@@ -1,16 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.c                                           :+:      :+:    :+:   */
+/*   client_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mmoreira <mmoreira@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/07/08 16:39:03 by mmoreira          #+#    #+#             */
-/*   Updated: 2021/07/12 16:15:27 by mmoreira         ###   ########.fr       */
+/*   Created: 2021/07/12 16:51:11 by mmoreira          #+#    #+#             */
+/*   Updated: 2021/07/12 17:19:32 by mmoreira         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
+
+static void	confirm_receipt(int sig)
+{
+	(void)sig;
+	write(1, "Mensagem recebida chefe\n", 24);
+	exit(1);
+}
 
 static void	provider(int c, int pid)
 {
@@ -51,17 +58,20 @@ int	main(int argc, char **argv)
 	pid = 0;
 	if (argc != 3)
 	{
-		write(1, "Conserta o numero de argumentos ai tio", 38);
+		write(1, "Conserta o numero de argumentos ai tio\n", 39);
 		return (0);
 	}
 	i = get_pid(*(argv + 1), &pid);
 	if (i)
 	{
-		write(1, "Esse PID ai ta meio estranho meu cria", 37);
+		write(1, "Esse PID ai ta meio estranho meu cria\n", 38);
 		return (0);
 	}
+	signal(SIGUSR1, confirm_receipt);
 	while (*(*(argv + 2) + i))
 		provider(*(*(argv + 2) + i++), pid);
 	provider(0, pid);
+	while (1)
+		pause();
 	return (0);
 }

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.c                                           :+:      :+:    :+:   */
+/*   server_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mmoreira <mmoreira@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/07/08 16:26:49 by mmoreira          #+#    #+#             */
-/*   Updated: 2021/07/12 16:35:09 by mmoreira         ###   ########.fr       */
+/*   Created: 2021/07/12 16:57:41 by mmoreira          #+#    #+#             */
+/*   Updated: 2021/07/12 17:15:02 by mmoreira         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,12 +51,13 @@ static char	*addchar(char *str, char c)
 	return (temp);
 }
 
-static void	receiver(int sig)
+static void	receiver(int sig, siginfo_t *info, void *ucontext)
 {
 	static int	c;
 	static int	p;
 	static char	*str;
 
+	(void)ucontext;
 	if (sig == SIGUSR2)
 		c += 1 << (7 - p);
 	if (++p == 8)
@@ -65,10 +66,12 @@ static void	receiver(int sig)
 			str = addchar(str, c);
 		else
 		{
+			write(1, "/----------------------------------------\n| ", 4 + 40);
 			write(1, str, str_len(str));
-			write(1, "\n", 1);
+			write(1, "\n\\----------------------------------------\n", 3 + 40);
 			free(str);
 			str = NULL;
+			kill(info->si_pid, SIGUSR1);
 		}
 		c = 0;
 		p = 0;
@@ -102,8 +105,8 @@ int	main(void)
 {
 	struct sigaction	newact;
 
-	newact.sa_handler = receiver;
-	newact.sa_flags = 0;
+	newact.sa_flags = SA_SIGINFO;
+	newact.sa_sigaction = receiver;
 	if (sigemptyset(&newact.sa_mask) == -1
 		|| sigaction(SIGUSR1, &newact, NULL) == -1
 		|| sigaction(SIGUSR2, &newact, NULL) == -1)
